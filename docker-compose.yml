@@ -1,0 +1,36 @@
+services:
+  php:
+    image: php:8.3-apache #You can change for any versions you want
+    container_name: php8
+    ports:    #Specifying the local port and the exposed port
+      - 8080:80
+    volumes:    #By using this method, we can modify directly the files without rebuild the container 
+      - ./php:/var/www/html 
+    build:      #Here we find the docker file to use it in the deploy
+        context: .
+        dockerfile: DockerFile
+  mysql:
+    image: mysql      #You can change by any type of database you want
+    container_name: metabase-db
+    ports:
+      - 3306:3306
+    environment:    #All parameters required to connect to DB
+      MYSQL_ROOT_PASSWORD: choose_root_password
+      MYSQL_DATABASE: super_db_name
+      MYSQL_USER: super_username
+      MYSQL_PASSWORD: super_password
+  metabase:   #Metabase deploy
+    image: metabase/metabase
+    container_name: metabase
+    ports:
+      - 3333:3000
+  phpma:  #PHPMyAdmin deploy
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:    #All paramaters to connect PHPMA to your DB
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql     #Here you have to select your container name uyou choose for your DB
+      PMA_USER: super_pma_username
+      PMA_PASSWORD: super_pma_password
+    ports:
+      - 8899:80
